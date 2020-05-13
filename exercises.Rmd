@@ -1,0 +1,190 @@
+---
+title: "Separate, unite, and strings"
+author:
+  - [TEAM NAME GOES HERE]
+output: 
+  html_document:
+    df_print: paged
+    highlight: textmate 
+    theme: readable
+    code_folding: hide
+    toc: true
+    toc_float: true
+    fig_width: 7
+    fig_height: 5
+---
+
+# Overview
+
+These exercises will help you practice applying `separate`, `unite`, and regular expressions. You will use a messy dataset with information about cardiovascular disease (CVD).
+
+## Pre-requisites 
+
+Before starting these exercises, you should have a good understanding of 
+
+1. The [Tidy your data](https://rstudio.cloud/learn/primers/4.1) Primer.
+
+1. Chapter 12.3 - 12.7 and Chapter 14 of [R for Data Science](https://r4ds.had.co.nz/tidy-data.html#pivoting)
+
+## Setup
+
+```{r, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+library(magrittr)
+
+```
+
+## Data dictionary
+
+```{r}
+
+cvd_messy_descr <-
+  c("ID" = 'Participant identification',
+    "question_age" = "Question: how old are you / when where you born? Participants 51 or older answered the second question.",
+    "question_substance" = 'Question: do you smoke or drink?',
+    "question_bp" = 'Question: what is your blood pressure? Are you taking medications to lower your blood pressure?',
+    "labs" = 'A collection of laboratory values concatenated into a single string. Notably, the order of lab values is random',
+    "cvd_fup" = 'Report of whether this participant exerienced a cardiovascular disease event (i.e., stroke or coronary heart disease) after their interview')
+
+# the enframe function transforms a vector into a tibble,
+tibble::enframe(cvd_messy_descr) %>% 
+  gt::gt(rowname_col = "name") %>%
+  gt::tab_stubhead(label = 'Variable name') %>% 
+  gt::cols_label(value = 'Variable description') %>% 
+  gt::cols_align('left') %>% 
+  gt::tab_header(title = 'Description of messy cardiovascular disease data')
+
+```
+
+## Import
+
+```{r}
+
+cvd_messy <- readr::read_rds('data/cvd_messy.rds')
+
+cvd_messy
+
+```
+
+# Problem 1
+
+Tidy the data up to create the following columns: 
+
+- `ID`: (numeric) participant identification
+- `cvd_status`: (numeric) 0 if no CVD, 1 if CVD 
+- `cvd_time`: (numeric) years from interview to CVD or loss to follow-up
+- `sbp`: (numeric) systolic blood pressure, mm Hg
+- `dbp`: (numeric) diastolic blood pressure, mm Hg
+- `bp_meds`: (factor) Yes/No for use of blood pressure lowering medication
+- `age_number`: (numeric) age in years
+- `drink`: (factor) Yes/No for drinking  
+- `smoke`: (factor) Yes/No for smoking
+- `albumin`: (numeric) albumin levels
+- `hba1c`: (numeric) HbA1C levels
+- `creatinine`: (numeric) creatinine levels
+
+Each column can be cleaned in a number of different ways. 
+
+- to create `cvd_time`, I recommend making a slight modification to the regular expression we used in the lecture. 
+
+- A lot of the other variables can be managed with `str_detect`, `str_extract`, and `str_remove`. 
+
+- You could also consider converting some variables into factors with new labels and then using separate. 
+
+- For the lab values, look up a new function: `?separate_rows`. The problem will be much harder if you do not use `separate_rows`
+
+Once you are finished, remove the original messy columns and convert any character valued columns to factors. Your cleaned data should look like this: 
+
+```{r}
+
+readr::read_rds('solutions/01_solution.rds')
+
+```
+
+# Problem 2
+
+Create new columns:
+
+- `diabetes` (factor) Yes if HbA1C is greater than 6.5, No if less than or equal to 6.5
+
+- `albuminuria` (factor) 'Yes' if albumin / creatinine is greater than or equal to 30 and 'No' if albumin / creatinine is less than 30
+
+- `bp_midrange` (factor) Yes if at least one of the two conditions below are true: 
+
+    + SBP is greater than or equal to 130 and less than 140 
+    + DBP is greater than or equal to 80 and less than 90 
+
+- `rec_bpmeds_acc_aha` (factor) 'Yes' if any of the conditions below are `TRUE`, and 'No' if all of them are `FALSE`.
+
+    + SBP is greater than 140 OR DBP is greater than 90
+    + `bp_midrange` == 'Yes' and `albuminuria` == 'Yes'
+    + `bp_midrange` == 'Yes' and `diabetes` == 'Yes'
+    + `bp_midrange` == 'Yes' and `age_number` > 65
+
+
+- `rec_bpmeds_jnc7` (factor) Yes if SBP > 140 OR DBP > 90, 'No' if SBP is less than or equal to 140 and DBP is less than or equal to 90.
+
+Note: `rec_bpmeds_acc_aha` is a simplified version of the 2017 American College of Cardiology and American Heart Association's BP guidelines.
+
+```{r}
+
+readr::read_rds('solutions/02_solution.rds')
+
+```
+
+# Problem 3
+
+Use `count` and `mutate`, `glue`, and `pivot_wider` to make the following table summarizing counts and percent of diabetes, stratified by recommendations to initiate or intensify BP lowering. Remember to `group` and `ungroup` the data appropriately. 
+
+```{r}
+
+readr::read_rds('solutions/03_solution.rds')
+
+```
+
+# Problem 4
+
+You might imagine doing Problem 3 for all variables and then dealing with combining results into a participant characteristics table. Sounds pretty tedious, right? The `gtsummary` package is here for you. Explore the package website and focus on the `tbl_summary()` [vignette](http://www.danieldsjoberg.com/gtsummary/articles/tbl_summary.html). When you are ready, try using `tbl_summary()` on the data you created. 
+
+Before creating your table, make sure that all of the character variables in your data are converted to factor variables, and that all of your factor variables are given an explicit `NA` coding such that missing values are given a value of 'Unknown'. 
+
+```{r}
+
+readr::read_rds('solutions/04_solution.rds')
+
+```
+
+# Problem 5
+
+The ACC/AHA guideline may recommend initiating or intensifying medication to lower BP for adults with SBP/DBP greater than 130/80. The lower BP threshold has been criticized in many editorials. Using your data, assess the merit of these criticisms: 
+
+1. Create a new dataset where neither `rec_bpmeds_acc_aha` nor `rec_bpmeds_jnc7` have any 'Unknown' values.
+
+2. Create a new variable by uniting the `rec_bpmeds_acc_aha` with the `rec_bpmeds_jnc7` column. 
+
+3. You should have three categories in the new variable. Recode them as follows: 
+
+- No_No --> Not recommended BP medication by either guideline
+- Yes_No --> Recommended BP medication by ACC/AHA only
+- Yes_Yes --> Recommended BP medication by both guidelines
+
+4. Fit a model to estimate the hazard ratio of being in the 2nd or 3rd group compared to the first. Use this code to fit the model: 
+
+```{r}
+
+# make sure your dataset is called cvd_model
+# mdl <- coxph(Surv(cvd_time, cvd_status) ~ rec, data= cvd_model)
+
+```
+
+5. Use the `tbl_regression()` function to summarize your model. Make sure to set `exponentiate = TRUE` so that `tbl_regression()` will present hazard ratios. Your table should look like this:
+
+```{r}
+
+readr::read_rds('solutions/05_solution.rds')
+
+```
+
+
+
