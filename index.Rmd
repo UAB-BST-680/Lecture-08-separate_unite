@@ -319,7 +319,10 @@ layout:false
 
 To learn more, see
 
-- This [vignette](https://tidyr.tidyverse.org/articles/pivot.html#introduction) dedicated to the `pivot_wider` and `pivot_longer` functions.
+- The [stringr](https://stringr.tidyverse.org/) website
+
+- This [vignette](https://stringr.tidyverse.org/articles/regular-expressions.html) dedicated to regular expressions. 
+
 
 
 
