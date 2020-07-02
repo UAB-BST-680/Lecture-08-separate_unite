@@ -67,6 +67,10 @@ cvd_messy
 
 ```
 
+# Solutions
+
+My solutions (for some reason I can't figure out) break R-studio cloud's pandoc rendering engine, so I am not printing them in the R-markdown like I normally do. You can still read in my solutions by un-commenting the `read_rds()` statements or view them in exercises.Rmd. 
+
 # Problem 1
 
 Tidy the data up to create the following columns: 
@@ -98,7 +102,7 @@ Once you are finished, remove the original messy columns and convert any charact
 
 ```{r}
 
-readr::read_rds('solutions/01_solution.rds')
+# readr::read_rds('solutions/01_solution.rds')
 
 ```
 
@@ -129,7 +133,7 @@ Note: `rec_bpmeds_acc_aha` is a simplified version of the 2017 American College 
 
 ```{r}
 
-readr::read_rds('solutions/02_solution.rds')
+# readr::read_rds('solutions/02_solution.rds')
 
 ```
 
@@ -139,7 +143,7 @@ Use `count` and `mutate`, `glue`, and `pivot_wider` to make the following table 
 
 ```{r}
 
-readr::read_rds('solutions/03_solution.rds')
+# readr::read_rds('solutions/03_solution.rds')
 
 ```
 
@@ -151,7 +155,7 @@ Before creating your table, make sure that all of the character variables in you
 
 ```{r}
 
-readr::read_rds('solutions/04_solution.rds')
+# readr::read_rds('solutions/04_solution.rds')
 
 ```
 
@@ -182,7 +186,7 @@ The ACC/AHA guideline may recommend initiating or intensifying medication to low
 
 ```{r}
 
-readr::read_rds('solutions/05_solution.rds')
+# readr::read_rds('solutions/05_solution.rds')
 
 ```
 
