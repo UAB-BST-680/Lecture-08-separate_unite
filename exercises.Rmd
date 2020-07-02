@@ -117,7 +117,7 @@ Create new columns:
 
 - `rec_bpmeds_acc_aha` (factor) 'Yes' if any of the conditions below are `TRUE`, and 'No' if all of them are `FALSE`.
 
-    + SBP is greater than 140 OR DBP is greater than 90
+    + SBP is greater than or equal to 140 OR DBP is greater than or equal to 90
     + `bp_midrange` == 'Yes' and `albuminuria` == 'Yes'
     + `bp_midrange` == 'Yes' and `diabetes` == 'Yes'
     + `bp_midrange` == 'Yes' and `age_number` > 65
