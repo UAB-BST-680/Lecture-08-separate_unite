@@ -123,7 +123,7 @@ Create new columns:
     + `bp_midrange` == 'Yes' and `age_number` > 65
 
 
-- `rec_bpmeds_jnc7` (factor) Yes if SBP > 140 OR DBP > 90, 'No' if SBP is less than or equal to 140 and DBP is less than or equal to 90.
+- `rec_bpmeds_jnc7` (factor) Yes if SBP >= 140 OR DBP >= 90, 'No' if SBP is less than or equal to 140 and DBP is less than or equal to 90.
 
 Note: `rec_bpmeds_acc_aha` is a simplified version of the 2017 American College of Cardiology and American Heart Association's BP guidelines.
 
